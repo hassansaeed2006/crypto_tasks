@@ -1,4 +1,6 @@
 import string
+import tkinter as tk
+from tkinter import messagebox
 
 def generate_playfair_matrix(keyword):
     keyword = keyword.upper().replace("J", "I")
@@ -75,20 +77,48 @@ def playfair_decrypt(ciphertext, matrix):
     
     return plaintext
 
-keyword = input("Enter the keyword: ")
-playfair_matrix = generate_playfair_matrix(keyword)
-print("\nPlayfair Matrix:")
-for row in playfair_matrix:
-    print(" ".join(row))
+def execute_cipher():
+    keyword = keyword_entry.get()
+    message = message_entry.get()
+    choice = choice_var.get()
+    
+    if not keyword or not message:
+        messagebox.showerror("Error", "Please enter both keyword and message.")
+        return
+    
+    playfair_matrix = generate_playfair_matrix(keyword)
+    
+    if choice == "encrypt":
+        result = playfair_encrypt(message, playfair_matrix)
+    else:
+        result = playfair_decrypt(message, playfair_matrix)
+    
+    result_label.config(text=f"Result: {result}")
 
-choice = input("Do you want to encrypt or decrypt? (e/d): ").strip().lower()
-message = input("Enter the message: ")
+# GUI Setup
+root = tk.Tk()
+root.title("Playfair Cipher")
+root.geometry("400x300")
+root.configure(bg="#2c3e50")
 
-if choice == 'e':
-    result = playfair_encrypt(message, playfair_matrix)
-    print("\nEncrypted Text:", result)
-elif choice == 'd':
-    result = playfair_decrypt(message, playfair_matrix)
-    print("\nDecrypted Text:", result)
-else:
-    print("Invalid choice. Please enter 'e' for encryption or 'd' for decryption.")
+frame = tk.Frame(root, bg="#2c3e50")
+frame.pack(pady=20)
+
+tk.Label(frame, text="Keyword:", bg="#2c3e50", fg="white", font=("Arial", 12)).grid(row=0, column=0, padx=5, pady=5)
+keyword_entry = tk.Entry(frame, font=("Arial", 12))
+keyword_entry.grid(row=0, column=1, padx=5, pady=5)
+
+tk.Label(frame, text="Message:", bg="#2c3e50", fg="white", font=("Arial", 12)).grid(row=1, column=0, padx=5, pady=5)
+message_entry = tk.Entry(frame, font=("Arial", 12))
+message_entry.grid(row=1, column=1, padx=5, pady=5)
+
+choice_var = tk.StringVar(value="encrypt")
+tk.Radiobutton(frame, text="Encrypt", variable=choice_var, value="encrypt", bg="#2c3e50", fg="white", font=("Arial", 12)).grid(row=2, column=0, pady=5)
+tk.Radiobutton(frame, text="Decrypt", variable=choice_var, value="decrypt", bg="#2c3e50", fg="white", font=("Arial", 12)).grid(row=2, column=1, pady=5)
+
+tk.Button(frame, text="Execute", command=execute_cipher, bg="#27ae60", fg="white", font=("Arial", 12), padx=10, pady=5).grid(row=3, columnspan=2, pady=10)
+
+result_label = tk.Label(root, text="Result:", bg="#2c3e50", fg="white", font=("Arial", 12, "bold"))
+result_label.pack(pady=10)
+
+root.mainloop()
