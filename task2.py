@@ -1,5 +1,7 @@
 import string
 from collections import Counter
+import tkinter as tk
+from tkinter import messagebox
 
 def frequency_analysis(ciphertext):
     letter_frequencies = {
@@ -19,14 +21,36 @@ def frequency_analysis(ciphertext):
     
     return decrypted_text, decryption_map
 
+def execute_analysis():
+    ciphertext = message_entry.get()
+    if not ciphertext:
+        messagebox.showerror("Error", "Please enter an encrypted message.")
+        return
+    
+    decrypted_text, mapping = frequency_analysis(ciphertext)
+    result_label.config(text=f"Decrypted Text: {decrypted_text}")
+    mapping_text.set("\n".join([f"{cipher} -> {plain}" for cipher, plain in mapping.items()]))
 
-encrypted_message = input("Enter the encrypted message: ")
-decrypted_text, mapping = frequency_analysis(encrypted_message)
+# GUI Setup
+root = tk.Tk()
+root.title("Frequency Analysis")
+root.geometry("400x350")
+root.configure(bg="#2c3e50")
 
+frame = tk.Frame(root, bg="#2c3e50")
+frame.pack(pady=20)
 
-print("\nMost likely decrypted text:")
-print(decrypted_text)
+tk.Label(frame, text="Encrypted Message:", bg="#2c3e50", fg="white", font=("Arial", 12)).grid(row=0, column=0, padx=5, pady=5)
+message_entry = tk.Entry(frame, font=("Arial", 12), width=30)
+message_entry.grid(row=0, column=1, padx=5, pady=5)
 
-print("\nSubstitution mapping:")
-for cipher, plain in mapping.items():
-    print(f"{cipher} -> {plain}")
+tk.Button(frame, text="Analyze", command=execute_analysis, bg="#27ae60", fg="white", font=("Arial", 12), padx=10, pady=5).grid(row=1, columnspan=2, pady=10)
+
+result_label = tk.Label(root, text="Decrypted Text:", bg="#2c3e50", fg="white", font=("Arial", 12, "bold"))
+result_label.pack(pady=10)
+
+mapping_text = tk.StringVar()
+mapping_label = tk.Label(root, textvariable=mapping_text, bg="#2c3e50", fg="white", font=("Arial", 10))
+mapping_label.pack(pady=10)
+
+root.mainloop()
